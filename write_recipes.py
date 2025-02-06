@@ -39,53 +39,46 @@ class RecipePG():
 
     def create_table(self):
         try:
-            self.cursor.execute("CREATE TABLE recipe (id serial PRIMARY KEY, time_created date, title varchar, content varchar);")
+            self.cursor.execute("CREATE TABLE author (id serial PRIMARY KEY, fullname varchar, bio varchar);")
+            # self.cursor.execute("CREATE TABLE recipe (id serial PRIMARY KEY, time_created date, title varchar, content varchar);")
             self.connection.commit() # <--- makes sure the change is shown in the database
         except:
             print("I can't drop our test database!")
 
     def update_table(self):
         try:
-            self.cursor.execute("ALTER TABLE recipe ADD timestamp TIMESTAMP;")
+            self.cursor.execute("ALTER TABLE recipe ADD author_id VARCHAR;")
             self.connection.commit() # <--- makes sure the change is shown in the database
         except:
             print("I can't drop our test database!")
 
     def write_rows(self):
-        recipe_content = """
-        2 medium carrots , peeled cut into 3mm / 1/10" batons (Note 1)
-▢1/2 large daikon (white radish) , peeled, cut the same as carrots (Note 1)
-▢1 1/2 cups boiling water
-▢1/2 cup white sugar
-▢4 tsp cooking / kosher salt
-▢3/4 cup rice wine vinegar (sub apple cider vinegar)
-            """
         self.cursor.execute("""
-            INSERT INTO recipe (time_created, title, content)
+            INSERT INTO author (id, fullname, bio)
             VALUES (%s, %s, %s);
         """, (
-            datetime.datetime.now(),
-            "Vietnamese pickled carrots and daikon",
-            recipe_content,
+            123,
+            "The New York Times",
+            "Are you trying to hide a newspaper inside of your cooking app",
         ))
         self.connection.commit()
 
     def update_rows(self):
         self.cursor.execute("""
             UPDATE recipe
-            SET timestamp = %s
-            WHERE id = 2
+            SET author_id = %s
+            WHERE id = 12345
         """, (
-            datetime.datetime.now(),
+            123,
         ))
         self.connection.commit()
 
 def main():
     pg_recipes = RecipePG(database=database, username=username, password=password, host=hostname, port=port)
 
-    # pg_recipes.write_rows()
+    # pg_recipes.update_table()
     # pg_recipes.update_rows()
-    pg_recipes.read_table_schema()
+    pg_recipes.write_rows()
 
     pg_recipes.teardown()
 
